@@ -1,0 +1,60 @@
+import React, { useState, useEffect } from "react";
+import { Box, Flex, Button, Heading, Text } from "@chakra-ui/react";
+import { FaReact } from "react-icons/fa";
+
+const Index = () => {
+  const [isActive, setIsActive] = useState(false);
+  const [score, setScore] = useState(0);
+  const [reaction, setReaction] = useState(0);
+
+  const startGame = () => {
+    setIsActive(true);
+    const randomDelay = Math.floor(Math.random() * 4000) + 1000; // Random delay between 1-5 seconds
+    setTimeout(() => {
+      setReaction(Date.now());
+    }, randomDelay);
+  };
+
+  const endGame = () => {
+    setIsActive(false);
+    setScore((prevScore) => prevScore + 1);
+  };
+
+  useEffect(() => {
+    let timeoutId;
+    if (isActive && reaction !== 0) {
+      timeoutId = setTimeout(() => {
+        endGame();
+        setReaction(0);
+      }, 2000);
+    }
+    return () => clearTimeout(timeoutId);
+  }, [isActive, reaction]);
+
+  return (
+    <Flex height="100vh" alignItems="center" justifyContent="center" flexDirection="column">
+      <Heading mb={6}>Reaction Test Game</Heading>
+      <Box mb={6}>
+        <Text fontSize="xl">Score: {score}</Text>
+      </Box>
+      <Box mb={6}>
+        {isActive ? (
+          <Button colorScheme="green" onClick={endGame}>
+            Click Me!
+          </Button>
+        ) : (
+          <Button colorScheme="blue" onClick={startGame}>
+            Start
+          </Button>
+        )}
+      </Box>
+      {isActive && reaction === 0 && (
+        <Box>
+          <FaReact size={48} color="red" />
+        </Box>
+      )}
+    </Flex>
+  );
+};
+
+export default Index;
